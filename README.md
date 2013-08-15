@@ -30,13 +30,14 @@ To **start from scratch**, move on to [Set up the project](#scratch).
 
 To **skip the basics**, do the following:
 
- - [Download][zip] and unzip the source repository for this guide, or clone it using [git](/understanding/git):
+ - [Download][zip] and unzip the source repository for this guide, or clone it using [Git][u-git]:
 `git clone https://github.com/springframework-meta/gs-rest-service.git`
  - cd into `gs-rest-service/initial`.
  - Jump ahead to [Create a resource representation class](#initial).
 
 **When you're finished**, you can check your results against the code in `gs-rest-service/complete`.
 [zip]: https://github.com/springframework-meta/gs-rest-service/archive/master.zip
+[u-git]: /understanding/Git
 
 
 <a name="scratch"></a>
@@ -62,7 +63,7 @@ In a project directory of your choosing, create the following subdirectory struc
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springframework.samples</groupId>
-    <artifactId>gs-messaging-stomp-websocket</artifactId>
+    <artifactId>gs-messaging-stomp-websocket-initial</artifactId>
     <packaging>war</packaging>
     <version>0.1.0</version>
 
@@ -200,10 +201,6 @@ In a project directory of your choosing, create the following subdirectory struc
 </project>
 ```
 
-This guide is using [Spring Boot's starter POMs](/guides/gs/spring-boot/).
-
-Note to experienced Maven users who are unaccustomed to using an external parent project: you can take it out later, it's just there to reduce the amount of code you have to write to get started.
-
 
 <a name="initial"></a>
 Create a resource representation class
@@ -313,20 +310,12 @@ After the 3 second delay, the `greeting()` method creates a new `Greeting` objec
 
 The `Greeting` object must be converted to JSON. Thanks to Spring's HTTP message converter support, you don't need to do this conversion manually. When you configure Spring for STOMP messaging, you'll inject `SimpMessagingTemplate` with an instance of [`MappingJackson2MessageConverter`][MappingJackson2MessageConverter]. It will be used to convert the `Greeting` instance to JSON.
 
-Configuring Spring for STOMP messaging
---------------------------------------
+Configure Spring for STOMP messaging
+------------------------------------
 
-TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1, so fill in this section then.
+TODO: What follows is the configuration for the STOMP/WebSocket-specific piece.
 
-
-Make the application executable
--------------------------------
-
-In order to deploy the application to Tomcat, you'll need to add a bit more configuration.
-
-First, you'll need to configure Spring's [`DispatcherServlet`[DispatcherServlet] to serve static resources so that it will serve index.html. This can be done by creating a configuration class that overrides the `configureDefaultServletHandling()` method of `WebMvcConfigurerAdapter` and calls `enable()` on the given `DefaultServletHandlerConfigurer`:
-
-`src/main/java/hello/WebConfig.java`
+`src/main/java/hello/StompConfig.java`
 ```java
 package hello;
 
@@ -334,7 +323,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.handler.websocket.SubProtocolWebSocketHandler;
@@ -348,13 +336,9 @@ import org.springframework.messaging.simp.stomp.StompProtocolHandler;
 import org.springframework.messaging.support.channel.ExecutorSubscribableChannel;
 import org.springframework.messaging.support.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.support.converter.MessageConverter;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.HttpRequestHandler;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.sockjs.SockJsHttpRequestHandler;
@@ -362,11 +346,7 @@ import org.springframework.web.socket.sockjs.SockJsService;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 
 @Configuration
-@EnableWebMvc
-@ComponentScan
-@EnableAsync
-public class WebConfig extends WebMvcConfigurerAdapter {
-
+public class StompConfig {
     private final MessageConverter<?> messageConverter = new MappingJackson2MessageConverter();
 
     private final SimpleUserQueueSuffixResolver userQueueSuffixResolver = new SimpleUserQueueSuffixResolver();
@@ -478,8 +458,117 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return taskScheduler;
     }
 
-    // Allow serving HTML files through the default Servlet
+}
+```
 
+TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1. There's no need to write this section to describe all of these beans now. It's better to hold off and wait for SPR-10835 to be resolved and then adjust the configuration accordingly and write about that. At that time, assuming the solution is simple enough, the configuration in StompConfig.java can be merged back into WebConfig.java to have only a single configuration class.
+
+Create a Browser Client
+-----------------------
+
+With the server side pieces in place, now let's turn our attention to the JavaScript client that will send messages to and receive messages from the server side.
+
+Create an index.html file that looks like this:
+
+`src/main/webapp/index.html`
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello WebSocket</title>
+    <script src="sockjs-0.3.4.js"></script>
+    <script src="stomp.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+        
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('response').innerHTML = '';
+        }
+        
+        function connect() {
+            var socket = new SockJS('/gs-messaging-stomp-websocket/hello');
+            stompClient = Stomp.over(socket);            
+            stompClient.connect('', '', function(frame) {
+                setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/queue/greetings', function(greeting){
+                    showGreeting(JSON.parse(greeting.body).content);
+                });
+            });
+        }
+        
+        function disconnect() {
+            stompClient.disconnect();
+            setConnected(false);
+            console.log("Disconnected");
+        }
+        
+        function sendName() {
+            var name = document.getElementById('name').value;
+            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+        }
+        
+        function showGreeting(message) {
+            var response = document.getElementById('response');
+            var p = document.createElement('p');
+            p.style.wordWrap = 'break-word';
+            p.appendChild(document.createTextNode(message));
+            response.appendChild(p);
+        }
+    </script>
+</head>
+<body>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+<div>
+    <div>
+        <button id="connect" onclick="connect();">Connect</button>
+        <button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+    </div>
+    <div id="conversationDiv">
+        <label>What is your name?</label><input type="text" id="name" />
+        <button id="sendName" onclick="sendName();">Send</button>
+        <p id="response"></p>
+    </div>
+</div>
+</body>
+</html>
+```
+
+The main piece of this HTML file to pay attention to is the JavaScript code in the `connect()` and `sendName()` functions.
+
+The `connect()` function uses [SockJS][SockJS] and [stomp.js][Stomp_JS] to open a connection to "/gs-messaging-stomp-websocket/hello", which is where `GreetingController` is waiting for connections. Upon a successful connection, it subscribes to the "/queue/greetings" destination, where the server will publish greeting messages. When a greeting appears on that queue, it will append a paragraph element to the DOM to display the greeting message.
+
+The `sendName()` function retrieves the name entered by the user and uses the STOMP client to send it to the "/app/hello" destination (where `GreetingController.greeting()` will receive it).
+
+Make the application executable
+-------------------------------
+
+In order to deploy the application to Tomcat, you'll need to add a bit more configuration.
+
+First, you'll need to configure Spring's [`DispatcherServlet`][DispatcherServlet] to serve static resources so that it will serve index.html. This can be done by creating a configuration class that overrides the `configureDefaultServletHandling()` method of `WebMvcConfigurerAdapter` and calls `enable()` on the given `DefaultServletHandlerConfigurer`:
+
+`src/main/java/hello/WebConfig.java`
+```java
+package hello;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+@Configuration
+@EnableWebMvc
+@ComponentScan
+@Import(StompConfig.class)
+public class WebConfig extends WebMvcConfigurerAdapter {
+    
+    // Allow serving HTML files through the default Servlet
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
         configurer.enable();
@@ -557,4 +646,7 @@ Congratulations! You've just developed a STOMP-based messaging service with Spri
 [jackson]: http://wiki.fasterxml.com/JacksonHome
 [MappingJackson2MessageConverter]: http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 [`AtController`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
-[`DispatcherServlet`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+[DispatcherServlet]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+[SockJS]: https://github.com/sockjs
+[Stomp_JS]: http://jmesnil.net/stomp-websocket/doc/
+

@@ -32,8 +32,6 @@ Set up the project
 
     <@snippet path="pom.xml" prefix="initial"/>
 
-<@bootstrap_starter_pom_disclaimer/>
-
 
 <a name="initial"></a>
 Create a resource representation class
@@ -86,11 +84,29 @@ After the 3 second delay, the `greeting()` method creates a new `Greeting` objec
 
 The `Greeting` object must be converted to JSON. Thanks to Spring's HTTP message converter support, you don't need to do this conversion manually. When you configure Spring for STOMP messaging, you'll inject `SimpMessagingTemplate` with an instance of [`MappingJackson2MessageConverter`][MappingJackson2MessageConverter]. It will be used to convert the `Greeting` instance to JSON.
 
-Configuring Spring for STOMP messaging
---------------------------------------
+Configure Spring for STOMP messaging
+------------------------------------
 
-TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1, so fill in this section then.
+TODO: What follows is the configuration for the STOMP/WebSocket-specific piece.
 
+    <@snippet path="src/main/java/hello/StompConfig.java" prefix="complete"/>
+
+TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1. There's no need to write this section to describe all of these beans now. It's better to hold off and wait for SPR-10835 to be resolved and then adjust the configuration accordingly and write about that. At that time, assuming the solution is simple enough, the configuration in StompConfig.java can be merged back into WebConfig.java to have only a single configuration class.
+
+Create a Browser Client
+-----------------------
+
+With the server side pieces in place, now let's turn our attention to the JavaScript client that will send messages to and receive messages from the server side.
+
+Create an index.html file that looks like this:
+
+    <@snippet path="src/main/webapp/index.html" prefix="complete"/>
+
+The main piece of this HTML file to pay attention to is the JavaScript code in the `connect()` and `sendName()` functions.
+
+The `connect()` function uses [SockJS][SockJS] and [stomp.js][Stomp_JS] to open a connection to "/gs-messaging-stomp-websocket/hello", which is where `GreetingController` is waiting for connections. Upon a successful connection, it subscribes to the "/queue/greetings" destination, where the server will publish greeting messages. When a greeting appears on that queue, it will append a paragraph element to the DOM to display the greeting message.
+
+The `sendName()` function retrieves the name entered by the user and uses the STOMP client to send it to the "/app/hello" destination (where `GreetingController.greeting()` will receive it).
 
 Make the application executable
 -------------------------------
@@ -139,4 +155,7 @@ Congratulations! You've just developed a STOMP-based messaging service with Spri
 [jackson]: http://wiki.fasterxml.com/JacksonHome
 [MappingJackson2MessageConverter]: http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 [`AtController`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
-[`DispatcherServlet`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+[DispatcherServlet]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+[SockJS]: https://github.com/sockjs
+[Stomp_JS]: http://jmesnil.net/stomp-websocket/doc/
+
