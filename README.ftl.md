@@ -1,4 +1,4 @@
-<#assign project_id="gs-rest-service">
+<#assign project_id="gs-messaging-stomp-websocket">
 
 # Getting Started: Messaging with WebSocket and STOMP
 
