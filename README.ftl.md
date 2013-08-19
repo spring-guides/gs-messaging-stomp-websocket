@@ -1,13 +1,11 @@
 <#assign project_id="gs-messaging-stomp-websocket">
 
-# Getting Started: Messaging with WebSocket and STOMP
-
-This guide walks you through creating a "hello world" STOMP messaging server with Spring. 
+This guide walks you through the process of creating a "hello world" STOMP messaging server with Spring. 
 
 What you'll build
 -----------------
 
-The server will accept a message carying the user's name. In response, it will push a greeting into a queue that the client is subscribed to.
+You'll build a server that will accept a message carrying a user's name. In response, it will push a greeting into a queue that the client is subscribed to.
 
 What you'll need
 ----------------
@@ -57,7 +55,7 @@ Upon receiving the message and extracting the name, the service will process it 
         "content": "Hello, Fred!"
     }
 
-To model the greeting representation, you another plain old Java object with a `content` property and corresponding `getContent()` method:
+To model the greeting representation, you add another plain old Java object with a `content` property and corresponding `getContent()` method:
 
     <@snippet path="src/main/java/hello/Greeting.java" prefix="complete"/>
 
@@ -72,9 +70,9 @@ In Spring's approach to working with STOMP messaging, STOMP messages can be hand
 
     <@snippet path="src/main/java/hello/GreetingController.java" prefix="complete"/>
 
-This controller is concise and simple, but there's plenty going on under the hood. Let's break it down step by step.
+This controller is concise and simple, but there's plenty going on. Let's break it down step by step.
 
-The `@MessageMapping` annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method will called.
+The `@MessageMapping` annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method is called.
 
 `@RequestBody` binds the payload of the message to a `HelloMessage` object which is passed into `greeting()`. 
 
@@ -93,7 +91,7 @@ TODO: What follows is the configuration for the STOMP/WebSocket-specific piece.
 
 TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1. There's no need to write this section to describe all of these beans now. It's better to hold off and wait for SPR-10835 to be resolved and then adjust the configuration accordingly and write about that. At that time, assuming the solution is simple enough, the configuration in StompConfig.java can be merged back into WebConfig.java to have only a single configuration class.
 
-Create a Browser Client
+Create a browser client
 -----------------------
 
 With the server side pieces in place, now let's turn our attention to the JavaScript client that will send messages to and receive messages from the server side.
@@ -113,7 +111,7 @@ Make the application executable
 
 In order to deploy the application to Tomcat, you'll need to add a bit more configuration.
 
-First, you'll need to configure Spring's [`DispatcherServlet`][DispatcherServlet] to serve static resources so that it will serve index.html. This can be done by creating a configuration class that overrides the `configureDefaultServletHandling()` method of `WebMvcConfigurerAdapter` and calls `enable()` on the given `DefaultServletHandlerConfigurer`:
+First, configure Spring's [`DispatcherServlet`][DispatcherServlet] to serve static resources so that it will serve index.html. You do this by creating a configuration class that overrides the `configureDefaultServletHandling()` method of `WebMvcConfigurerAdapter` and calls `enable()` on the given `DefaultServletHandlerConfigurer`:
 
     <@snippet path="src/main/java/hello/WebConfig.java" prefix="complete"/>
 
@@ -140,7 +138,7 @@ output/bin/startup.sh
 
 After the application starts, point your browser at http://localhost:8080/gs-messaging-stomp-websocket and click the "Connect" button.
 
-Upon opening a connection, you will be asked for your name. Enter your name and click "Send". Your name will be sent to the server as a JSON message over STOMP. The server will send a message back with a "Hello" greeting that will be displayed on the page. At this point, you may choose to send another name or you can click the "Disconnect" button to close the connection.
+Upon opening a connection, you are asked for your name. Enter your name and click "Send". Your name is sent to the server as a JSON message over STOMP. The server sends a message back with a "Hello" greeting that is displayed on the page. At this point, you can send another name, or you can click the "Disconnect" button to close the connection.
 
 
 Summary
