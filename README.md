@@ -31,12 +31,12 @@ To **start from scratch**, move on to [Set up the project](#scratch).
 To **skip the basics**, do the following:
 
  - [Download][zip] and unzip the source repository for this guide, or clone it using [Git][u-git]:
-`git clone https://github.com/springframework-meta/gs-rest-service.git`
+`git clone https://github.com/spring-guides/gs-rest-service.git`
  - cd into `gs-rest-service/initial`.
  - Jump ahead to [Create a resource representation class](#initial).
 
 **When you're finished**, you can check your results against the code in `gs-rest-service/complete`.
-[zip]: https://github.com/springframework-meta/gs-rest-service/archive/master.zip
+[zip]: https://github.com/spring-guides/gs-rest-service/archive/master.zip
 [u-git]: /understanding/Git
 
 
