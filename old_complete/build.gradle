@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+war {
+    baseName = 'gs-messaging-websocket'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.springsource.org/libs-snapshot" }
+}
+
+dependencies {
+    compile("org.springframework:spring-webmvc:4.0.0.RC1")
+    compile("org.springframework:spring-websocket:4.0.0.RC1")
+    compile("org.springframework:spring-messaging:4.0.0.RC1")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.2.3")
+    providedCompile("javax.websocket:javax.websocket-api:1.0-rc5")
+    providedCompile("javax.servlet:javax.servlet-api:3.1-b09")
+    testCompile("junit:junit:4.11")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}

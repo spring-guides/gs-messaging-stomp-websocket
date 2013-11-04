@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 
+
 @Controller
 public class GreetingController {
 
@@ -22,4 +23,5 @@ public class GreetingController {
         Greeting greeting = new Greeting("Hello, " + message.getName() + "!");
         messagingTemplate.convertAndSend("/queue/greetings", greeting);
     }
+
 }

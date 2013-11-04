@@ -1,26 +1,39 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M5")
+    }
+}
+
 apply plugin: 'java'
-apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'war'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'spring-boot'
 
-war {
-    baseName = 'gs-messaging-websocket'
+jar {
+    baseName = 'gs-rest-service'
     version =  '0.1.0'
 }
 
 repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/libs-snapshot" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
-    compile("org.springframework:spring-webmvc:4.0.0.BUILD-SNAPSHOT")
-    compile("org.springframework:spring-websocket:4.0.0.BUILD-SNAPSHOT")
-    providedCompile("javax.websocket:javax.websocket-api:1.0-rc5")
-    providedCompile("javax.servlet:javax.servlet-api:3.1-b09")
+    compile("org.springframework.boot:spring-boot-starter-web:0.5.0.M5")
+    compile("org.springframework.boot:spring-boot-starter-websocket:0.5.0.M5")
+    compile("org.springframework:spring-messaging:4.0.0.M3")
+    compile("org.projectreactor:reactor-tcp:1.0.0.BUILD-SNAPSHOT")
+    compile("com.fasterxml.jackson.core:jackson-databind")
     testCompile("junit:junit:4.11")
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+    gradleVersion = '1.8'
 }
