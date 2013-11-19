@@ -18,10 +18,13 @@ public class GreetingController {
     }
     
     @MessageMapping("/app/hello")
-    public void greeting(@RequestBody HelloMessage message) throws Exception {
+    public void greeting(HelloMessage message) throws Exception {
+        System.out.println("--------> Got the message");
         Thread.sleep(3000); // simulated delay
         Greeting greeting = new Greeting("Hello, " + message.getName() + "!");
+        System.out.println("--------> Sending a response");
         messagingTemplate.convertAndSend("/queue/greetings", greeting);
+        System.out.println("--------> Sent the response");
     }
 
 }

@@ -11,7 +11,6 @@ What you'll need
 ----------------
 
  - About 15 minutes
- - Tomcat 8 ([Tomcat 8.0.0-RC1][tomcat8] is available)
  - <@prereq_editor_jdk_buildtools/>
 
 
@@ -26,9 +25,10 @@ Set up the project
 
 <@create_directory_structure_hello/>
 
-### Create a Maven POM
 
-    <@snippet path="pom.xml" prefix="initial"/>
+<@create_both_builds/>
+
+<@bootstrap_starter_pom_disclaimer/>
 
 
 <a name="initial"></a>
@@ -59,9 +59,9 @@ To model the greeting representation, you add another plain old Java object with
 
     <@snippet path="src/main/java/hello/Greeting.java" prefix="complete"/>
 
-> **Note:** As you see in steps below, Spring uses the [Jackson JSON][jackson] library to automatically marshal instances of type `Greeting` into JSON.
+Spring will use the [Jackson JSON][jackson] library to automatically marshal instances of type `Greeting` into JSON.
 
-Next, you'll create the controller to receive the hello message and send a greeting message.
+Next, you'll create a controller to receive the hello message and send a greeting message.
 
 Create a message-handling controller
 ------------------------------------
@@ -72,9 +72,9 @@ In Spring's approach to working with STOMP messaging, STOMP messages can be hand
 
 This controller is concise and simple, but there's plenty going on. Let's break it down step by step.
 
-The `@MessageMapping` annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method is called.
+The [`@MessageMapping`][AtMessageMapping] annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method is called.
 
-`@RequestBody` binds the payload of the message to a `HelloMessage` object which is passed into `greeting()`. 
+The payload of the message is bound to a `HelloMessage` object which is passed into `greeting()`. 
 
 Internally, the implementation of the method simulates a processing delay by causing the thread to sleep for 3 seconds. This is to demonstrate that after the client sends a message, the server can take as long as it needs to process the message asynchronously.  The client may continue with whatever work it needs to do without waiting on the response.
 
@@ -85,11 +85,22 @@ The `Greeting` object must be converted to JSON. Thanks to Spring's HTTP message
 Configure Spring for STOMP messaging
 ------------------------------------
 
-TODO: What follows is the configuration for the STOMP/WebSocket-specific piece.
+Now that the essential components of the service are created, you can configure Spring to enable WebSocket and STOMP messaging.
 
-    <@snippet path="src/main/java/hello/StompConfig.java" prefix="complete"/>
+Create a Java class named `WebSocketConfig` that looks like this:
 
-TODO: This is extremely ugly at the moment, with many beans in play. Rossen says that SPR-10835 will be resolved in time for RC1. There's no need to write this section to describe all of these beans now. It's better to hold off and wait for SPR-10835 to be resolved and then adjust the configuration accordingly and write about that. At that time, assuming the solution is simple enough, the configuration in StompConfig.java can be merged back into WebConfig.java to have only a single configuration class.
+    <@snippet path="src/main/java/hello/WebSocketConfig.java" prefix="complete"/>
+
+`WebSocketConfig` is annotated with `@Configuration` to indicate that it is a Spring configuration class.
+It is also annotated [`@EnableWebSocketMessageBroker`][AtEnableWebSocketMessageBroker].
+As its name suggests, `@EnableWebSocketMessageBroker` enables a WebSocket message handling, backed by a message broker.
+
+The `configureMessageBroker()` method overrides the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
+It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/queue".
+It also designates the "/app" prefix for messages that are bound for `@MessageMapping`-annotated methods.
+
+The `registerStompEndpoints()` method registers the "/hello" endpoint, enabling SockJS fallback options so that alternative messaging options may be used if WebSocket is not available.
+This endpoint, when prefixed with "/app", is the endpoint that the `GreetingController.greeting()` method is mapped to handle.
 
 Create a browser client
 -----------------------
@@ -98,7 +109,7 @@ With the server side pieces in place, now let's turn our attention to the JavaSc
 
 Create an index.html file that looks like this:
 
-    <@snippet path="src/main/webapp/index.html" prefix="complete"/>
+    <@snippet path="src/main/resources/static/index.html" prefix="complete"/>
 
 The main piece of this HTML file to pay attention to is the JavaScript code in the `connect()` and `sendName()` functions.
 
@@ -109,36 +120,32 @@ The `sendName()` function retrieves the name entered by the user and uses the ST
 Make the application executable
 -------------------------------
 
-In order to deploy the application to Tomcat, you'll need to add a bit more configuration.
+Although it is possible to package this service as a traditional [WAR][u-war] file for deployment to an external application server, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. Along the way, you use Spring's support for embedding the [Tomcat][u-tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
 
-First, configure Spring's [`DispatcherServlet`][DispatcherServlet] to serve static resources so that it will serve index.html. You do this by creating a configuration class that overrides the `configureDefaultServletHandling()` method of `WebMvcConfigurerAdapter` and calls `enable()` on the given `DefaultServletHandlerConfigurer`:
+### Create an Application class
 
-    <@snippet path="src/main/java/hello/WebConfig.java" prefix="complete"/>
+    <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
 
-You'll also need to configure `DispatcherServlet`. This is most easily done by creating a class that extends `AbstractAnnotationConfigDispatcherServletInitializer`:
+The `main()` method defers to the [`SpringApplication`][] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the [Spring application context][u-application-context].
 
-    <@snippet path="src/main/java/hello/HelloServletInitializer.java" prefix="complete"/>
+The `@ComponentScan` annotation tells Spring to search recursively through the `hello` package and its children for classes marked directly or indirectly with Spring's [`@Component`][] annotation. This directive ensures that Spring finds and registers the `GreetingController`, because it is marked with `@Controller`, which in turn is a kind of `@Component` annotation.
 
-Here, `DispatcherServlet` is mapped to "/". Also, `WebConfig` and `EndpointConfig` are specified, respectively, as the servlet and root configuration classes.
+The [`@EnableAutoConfiguration`][] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC [`DispatcherServlet`][] is configured and registered for you — no `web.xml` necessary! Auto-configuration is a powerful, flexible mechanism. See the [API documentation][`@EnableAutoConfiguration`] for further details.
 
-Now you're ready to build and deploy the application to Tomcat 8. Start by building the WAR file:
+<@build_an_executable_jar_subhead/>
 
-```sh
-mvn package
-```
+<@build_an_executable_jar_with_both/>
 
-Then copy the WAR file to Tomcat 8's `trunk/output/webapps` directory. 
+<@run_the_application_with_both module="service"/>
 
-Finally, restart Tomcat 8:
+Logging output is displayed. The service should be up and running within a few seconds.
 
-```sh
-output/bin/shutdown.sh
-output/bin/startup.sh
-```
+Test the service
+----------------
 
-After the application starts, point your browser at http://localhost:8080/gs-messaging-stomp-websocket and click the "Connect" button.
+Now that the service is running, point your browser at http://localhost:8080 and click the "Connect" button.
 
-Upon opening a connection, you are asked for your name. Enter your name and click "Send". Your name is sent to the server as a JSON message over STOMP. The server sends a message back with a "Hello" greeting that is displayed on the page. At this point, you can send another name, or you can click the "Disconnect" button to close the connection.
+Upon opening a connection, you are asked for your name. Enter your name and click "Send". Your name is sent to the server as a JSON message over STOMP. After a 3-second simulated delay, the server sends a message back with a "Hello" greeting that is displayed on the page. At this point, you can send another name, or you can click the "Disconnect" button to close the connection.
 
 
 Summary
@@ -147,13 +154,16 @@ Summary
 Congratulations! You've just developed a STOMP-based messaging service with Spring. 
 
 
-[tomcat8]: http://tomcat.apache.org/download-80.cgi
 [u-rest]: /understanding/rest
 [u-json]: /understanding/json
 [jackson]: http://wiki.fasterxml.com/JacksonHome
 [MappingJackson2MessageConverter]: http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
-[`AtController`]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
-[DispatcherServlet]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
+[AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
+[AtEnableWebSocket]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/socket/server/config/EnableWebSocket.html
+[AtEnableWebSocketMessageBroker]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/simp/config/EnableWebSocketMessageBroker.html
+[AtMessageMapping]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
+[AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
+.html
 [SockJS]: https://github.com/sockjs
 [Stomp_JS]: http://jmesnil.net/stomp-websocket/doc/
 
