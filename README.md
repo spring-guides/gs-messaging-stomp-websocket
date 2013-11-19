@@ -159,7 +159,7 @@ Next, you'll create a controller to receive the hello message and send a greetin
 Create a message-handling controller
 ------------------------------------
 
-In Spring's approach to working with STOMP messaging, STOMP messages can be handled by a controller. These components are easily identified by the [`@Controller`][AtController] annotation, and the `GreetingController` below is mapped to handle messages published on the "/app/hello" destination.
+In Spring's approach to working with STOMP messaging, STOMP messages can be handled by a controller. These components are easily identified by the [`@Controller`][AtController] annotation, and the `GreetingController` below is mapped to handle messages published on the "/hello" destination.
 
 `src/main/java/hello/GreetingController.java`
 ```java
@@ -182,8 +182,8 @@ public class GreetingController {
         this.messagingTemplate = messagingTemplate;
     }
     
-    @MessageMapping("/app/hello")
-    public void greeting(@RequestBody HelloMessage message) throws Exception {
+    @MessageMapping("/hello")
+    public void greeting(HelloMessage message) throws Exception {
         Thread.sleep(3000); // simulated delay
         Greeting greeting = new Greeting("Hello, " + message.getName() + "!");
         messagingTemplate.convertAndSend("/queue/greetings", greeting);
@@ -194,9 +194,9 @@ public class GreetingController {
 
 This controller is concise and simple, but there's plenty going on. Let's break it down step by step.
 
-The [`@MessageMapping`][AtMessageMapping] annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method is called.
+The [`@MessageMapping`][AtMessageMapping] annotation ensures that if a message is published on the "/hello" destination, then the `greeting()` method is called.
 
-`@RequestBody` binds the payload of the message to a `HelloMessage` object which is passed into `greeting()`. 
+The payload of the message is bound to a `HelloMessage` object which is passed into `greeting()`. 
 
 Internally, the implementation of the method simulates a processing delay by causing the thread to sleep for 3 seconds. This is to demonstrate that after the client sends a message, the server can take as long as it needs to process the message asynchronously.  The client may continue with whatever work it needs to do without waiting on the response.
 
@@ -227,7 +227,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureMessageBroker(MessageBrokerConfigurer config) {
-		config.enableSimpleBroker("/queue");
+		config.enableSimpleBroker("/queue/");
 		config.setAnnotationMethodDestinationPrefixes("/app");
 	}
 	
@@ -247,9 +247,8 @@ The `configureMessageBroker()` method overrides the default method in `WebSocket
 It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/queue".
 It also designates the "/app" prefix for messages that are bound for `@MessageMapping`-annotated methods.
 
-The `registerStompEndpoints()` method registers the "/hello" endpoint (which, along with the "/app" prefix, is handled by `GreetingController`'s `greeting()` method). 
-In doing so, it enables SockJS fallback options on that endpoint so that alternative messaging options may be used if WebSocket is not available.
-
+The `registerStompEndpoints()` method registers the "/hello" endpoint, enabling SockJS fallback options so that alternative messaging options may be used if WebSocket is not available.
+This endpoint, when prefixed with "/app", is the endpoint that the `GreetingController.greeting()` method is mapped to handle.
 
 Create a browser client
 -----------------------
@@ -442,16 +441,22 @@ Summary
 Congratulations! You've just developed a STOMP-based messaging service with Spring. 
 
 
-[u-rest]: /understanding/rest
-[u-json]: /understanding/json
+[u-rest]: /understanding/REST
+[u-json]: /understanding/JSON
 [jackson]: http://wiki.fasterxml.com/JacksonHome
+[u-view-templates]: /understanding/view-templates
+[u-war]: /understanding/WAR
+[u-tomcat]: /understanding/Tomcat
+[u-application-context]: /understanding/application-context
 [MappingJackson2MessageConverter]: http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 [AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
 [AtEnableWebSocket]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/socket/server/config/EnableWebSocket.html
 [AtEnableWebSocketMessageBroker]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/simp/config/EnableWebSocketMessageBroker.html
 [AtMessageMapping]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
-[AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
-.html
 [SockJS]: https://github.com/sockjs
 [Stomp_JS]: http://jmesnil.net/stomp-websocket/doc/
+[`SpringApplication`]: http://docs.spring.io/spring-boot/docs/0.5.0.M3/api/org/springframework/boot/SpringApplication.html
+[`@EnableAutoConfiguration`]: http://docs.spring.io/spring-boot/docs/0.5.0.M3/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
+[`@Component`]: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/stereotype/Component.html
+[`DispatcherServlet`]: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 

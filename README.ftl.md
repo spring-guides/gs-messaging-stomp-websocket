@@ -66,13 +66,13 @@ Next, you'll create a controller to receive the hello message and send a greetin
 Create a message-handling controller
 ------------------------------------
 
-In Spring's approach to working with STOMP messaging, STOMP messages can be handled by a controller. These components are easily identified by the [`@Controller`][AtController] annotation, and the `GreetingController` below is mapped to handle messages published on the "/app/hello" destination.
+In Spring's approach to working with STOMP messaging, STOMP messages can be handled by a controller. These components are easily identified by the [`@Controller`][AtController] annotation, and the `GreetingController` below is mapped to handle messages published on the "/hello" destination.
 
     <@snippet path="src/main/java/hello/GreetingController.java" prefix="complete"/>
 
 This controller is concise and simple, but there's plenty going on. Let's break it down step by step.
 
-The [`@MessageMapping`][AtMessageMapping] annotation ensures that if a message is published on the "/app/hello" destination, then the `greeting()` method is called.
+The [`@MessageMapping`][AtMessageMapping] annotation ensures that if a message is published on the "/hello" destination, then the `greeting()` method is called.
 
 The payload of the message is bound to a `HelloMessage` object which is passed into `greeting()`. 
 
@@ -154,16 +154,22 @@ Summary
 Congratulations! You've just developed a STOMP-based messaging service with Spring. 
 
 
-[u-rest]: /understanding/rest
-[u-json]: /understanding/json
+<@u_rest/>
+<@u_json/>
 [jackson]: http://wiki.fasterxml.com/JacksonHome
+<@u_view_templates/>
+<@u_war/>
+<@u_tomcat/>
+<@u_application_context/>
 [MappingJackson2MessageConverter]: http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 [AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
 [AtEnableWebSocket]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/web/socket/server/config/EnableWebSocket.html
 [AtEnableWebSocketMessageBroker]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/simp/config/EnableWebSocketMessageBroker.html
 [AtMessageMapping]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
-[AtController]: http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/stereotype/Controller.html
-.html
 [SockJS]: https://github.com/sockjs
 [Stomp_JS]: http://jmesnil.net/stomp-websocket/doc/
+[`SpringApplication`]: http://docs.spring.io/spring-boot/docs/0.5.0.M3/api/org/springframework/boot/SpringApplication.html
+[`@EnableAutoConfiguration`]: http://docs.spring.io/spring-boot/docs/0.5.0.M3/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
+[`@Component`]: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/stereotype/Component.html
+[`DispatcherServlet`]: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 
