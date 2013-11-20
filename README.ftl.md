@@ -93,7 +93,7 @@ Create a Java class named `WebSocketConfig` that looks like this:
 
 `WebSocketConfig` is annotated with `@Configuration` to indicate that it is a Spring configuration class.
 It is also annotated [`@EnableWebSocketMessageBroker`][AtEnableWebSocketMessageBroker].
-As its name suggests, `@EnableWebSocketMessageBroker` enables a WebSocket message handling, backed by a message broker.
+As its name suggests, `@EnableWebSocketMessageBroker` enables WebSocket message handling, backed by a message broker.
 
 The `configureMessageBroker()` method overrides the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
 It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/queue".

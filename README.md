@@ -61,31 +61,38 @@ Below is the [initial Gradle build file](https://github.com/spring-guides/gs-mes
 
 `build.gradle`
 ```gradle
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-snapshot" }
+        mavenLocal()
+    }
+}
+
 apply plugin: 'java'
-apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-war {
-    baseName = 'gs-messaging-websocket'
+jar {
+    baseName = 'gs-messaging-stomp-websocket'
     version =  '0.1.0'
 }
 
 repositories {
     mavenCentral()
-    maven { url "http://repo.springsource.org/libs-snapshot" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
-    compile("org.springframework:spring-webmvc:4.0.0.BUILD-SNAPSHOT")
-    compile("org.springframework:spring-websocket:4.0.0.BUILD-SNAPSHOT")
-    providedCompile("javax.websocket:javax.websocket-api:1.0-rc5")
-    providedCompile("javax.servlet:javax.servlet-api:3.1-b09")
+    compile("org.springframework.boot:spring-boot-starter-web:0.5.0.M6")
+    compile("org.springframework.boot:spring-boot-starter-websocket:0.5.0.M6")
+    compile("org.springframework:spring-messaging:4.0.0.RC1")
+    compile("org.projectreactor:reactor-tcp:1.0.0.RC1")
+    compile("com.fasterxml.jackson.core:jackson-databind")
     testCompile("junit:junit:4.11")
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+    gradleVersion = '1.8'
 }
 ```
     
@@ -241,7 +248,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 `WebSocketConfig` is annotated with `@Configuration` to indicate that it is a Spring configuration class.
 It is also annotated [`@EnableWebSocketMessageBroker`][AtEnableWebSocketMessageBroker].
-As its name suggests, `@EnableWebSocketMessageBroker` enables a WebSocket message handling, backed by a message broker.
+As its name suggests, `@EnableWebSocketMessageBroker` enables WebSocket message handling, backed by a message broker.
 
 The `configureMessageBroker()` method overrides the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
 It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/queue".
