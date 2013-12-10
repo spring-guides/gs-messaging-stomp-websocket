@@ -15,7 +15,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		config.enableSimpleBroker("/queue/");
-        config.setApplicationDestinationPrefixes("/app");
+		config.setApplicationDestinationPrefixes("/app");
 	}
 
 	@Override
@@ -23,12 +23,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.addEndpoint("/hello").withSockJS();
 	}
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration channelRegistration) {
-    }
+	@Override
+	public void configureClientInboundChannel(ChannelRegistration channelRegistration) {
+	}
 
-    @Override
-    public void configureClientOutboundChannel(ChannelRegistration channelRegistration) {
-    }
+	@Override
+	public void configureClientOutboundChannel(ChannelRegistration channelRegistration) {
+	}
 
 }
