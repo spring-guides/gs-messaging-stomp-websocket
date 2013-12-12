@@ -10,7 +10,7 @@
 :Stomp_JS: http://jmesnil.net/stomp-websocket/doc/
 :DispatcherServlet: http://docs.spring.io/spring/docs/4.0.0.RC1/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 :EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
-:AtSendTo: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/messaging/handler/annotation/SendTo.html
+:AtSendTo: http://docs.spring.io/spring/docs/4.0.0.RC1/javadoc-api/org/springframework/messaging/handler/annotation/SendTo.html
 :toc:
 :icons: font
 :source-highlighter: prettify
