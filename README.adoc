@@ -1,3 +1,7 @@
+---
+tags: [messaging, websocket]
+projects: [spring-framework]
+---
 :spring_version: 4.0.0.RELEASE
 :spring_boot_version: 0.5.0.M6
 :MappingJackson2MessageConverter: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
