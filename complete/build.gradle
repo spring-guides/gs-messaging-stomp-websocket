@@ -24,13 +24,13 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:0.5.0.BUILD-SNAPSHOT")
-    compile("org.springframework.boot:spring-boot-starter-websocket:0.5.0.BUILD-SNAPSHOT")
+    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC1")
+    compile("org.springframework.boot:spring-boot-starter-websocket:1.0.0.RC1")
     compile("org.springframework:spring-messaging:4.0.0.RELEASE")
     compile("com.fasterxml.jackson.core:jackson-databind")
     testCompile("junit:junit:4.11")
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '1.11'
 }
