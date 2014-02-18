@@ -17,7 +17,7 @@
         function connect() {
             var socket = new SockJS('/hello');
             stompClient = Stomp.over(socket);            
-            stompClient.connect('', '', function(frame) {
+            stompClient.connect({}, function(frame) {
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/greetings', function(greeting){
