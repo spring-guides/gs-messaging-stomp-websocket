@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC1")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.0.RC3")
     }
 }
 
@@ -24,9 +24,9 @@ repositories {
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC1")
-    compile("org.springframework.boot:spring-boot-starter-websocket:1.0.0.RC1")
-    compile("org.springframework:spring-messaging:4.0.0.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-websocket")
+    compile("org.springframework:spring-messaging")
     compile("com.fasterxml.jackson.core:jackson-databind")
     testCompile("junit:junit:4.11")
 }
