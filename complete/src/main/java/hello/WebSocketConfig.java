@@ -31,4 +31,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void configureClientOutboundChannel(ChannelRegistration channelRegistration) {
 	}
 
+	@Override
+	public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+		return true;
+	}
 }
