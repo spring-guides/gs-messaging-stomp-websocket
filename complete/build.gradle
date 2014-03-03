@@ -28,7 +28,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework:spring-messaging")
     compile("com.fasterxml.jackson.core:jackson-databind")
-    testCompile("junit:junit:4.11")
+    testCompile("junit:junit")
 }
 
 task wrapper(type: Wrapper) {
