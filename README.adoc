@@ -3,7 +3,7 @@ tags: [messaging, websocket]
 projects: [spring-framework]
 ---
 :spring_version: current
-:spring_boot_version: 1.0.0.RC3
+:spring_boot_version: 1.0.0.RC4
 :MappingJackson2MessageConverter: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 :Component: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Component.html
 :jackson: http://wiki.fasterxml.com/JacksonHome
