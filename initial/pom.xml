@@ -25,7 +25,6 @@
     </dependencies>
 
     <properties>
-        <start-class>hello.Application</start-class>
         <java.version>1.7</java.version>
     </properties>
 
