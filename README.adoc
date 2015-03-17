@@ -1,5 +1,5 @@
 ---
-tags: [messaging, websocket]
+tags: [messaging, websocket, stomp]
 projects: [spring-framework]
 ---
 :spring_version: current
