@@ -3,7 +3,7 @@ tags: [messaging, websocket, stomp]
 projects: [spring-framework]
 ---
 :spring_version: current
-:spring_boot_version: 1.2.3.RELEASE
+:spring_boot_version: 1.2.4.RELEASE
 :MappingJackson2MessageConverter: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 :jackson: http://wiki.fasterxml.com/JacksonHome
 :AtMessageMapping: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
