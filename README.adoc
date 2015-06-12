@@ -30,8 +30,8 @@ You'll build a server that will accept a message carrying a user's name. In resp
 
 == What you'll need
 
-:java_version: 1.7
-:java_version: 1.7
+:java_version: 1.8
+:java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
 
 

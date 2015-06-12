@@ -16,15 +16,15 @@ jar {
     baseName = 'gs-messaging-stomp-websocket'
     version =  '0.1.0'
 }
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket")
