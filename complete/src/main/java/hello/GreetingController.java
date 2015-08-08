@@ -13,8 +13,9 @@ public class GreetingController {
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public Greeting greeting(HelloMessage message) throws Exception {
+       
+       	// modified, add random prefix of pass or fail
         Random rand = new Random();
-        // String qq = Integer.toString(rand.nextInt(2));
         String data = null;
         boolean flag = (rand.nextInt(2) !=0);
         if(flag)
@@ -25,6 +26,7 @@ public class GreetingController {
         {
         	data = "fail";
         }
+
         return new Greeting("Hello, " + message.getName() + "!"+data);
     }
 
