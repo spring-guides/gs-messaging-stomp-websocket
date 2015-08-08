@@ -3,15 +3,14 @@ package hello;
 public class HelloMessage {
 
     private String name;
+    private String name2;
     
     public String getName() {
         return name;
     }
 
-    private String classname;
-    
-    public String getClassName() {
-        return classname;
+    public String getName2() {
+        return name2;
     }
 
 

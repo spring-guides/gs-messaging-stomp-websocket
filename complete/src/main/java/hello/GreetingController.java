@@ -27,8 +27,8 @@ public class GreetingController {
         	data = "fail";
         }
 
-        return new Greeting("Hello, " + message.getName() + "!"+data);
-        // return new Greeting("Hello, " + message.getClassName() + "!"+data);
+        // return new Greeting("Hello, " + message.getName() + "!"+data);
+        return new Greeting("Hello, " + message.getName2() + "!"+data);
 
     }
 

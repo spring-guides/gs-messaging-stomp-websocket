@@ -50,13 +50,12 @@
         // this is an experimental sendname() function
         // I will use a recursal way just as the sample do
         function sendName(times) {
-            var name = document.getElementById('name').value;
+            var name1 = document.getElementById('name').value;
             var classname = document.getElementById('classname').value;
 
-            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+            // stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name1 }));
             // the 2nd property cannot be read temporally
-            
-            // stompClient.send("/app/hello", {}, JSON.stringify({ 'classname': classname }));
+            stompClient.send("/app/hello", {}, JSON.stringify({ 'name2': classname }));
 
             if (times <1)
             {
