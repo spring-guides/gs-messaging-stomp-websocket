@@ -34,19 +34,39 @@
             console.log("Disconnected");
         }
         
-        function sendName() {
-            var name = document.getElementById('name').value;
-            var waiting_time = 300000;
-            // stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
-            for (i=0;i<2;i++)
-            {
-                stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
-                setTimeout(function(){
-                    console.log("waiting for next data.")
-                },waiting_time);
-            }
-        }
+        // function sendName() {
+        //     var name = document.getElementById('name').value;
+        //     var classname = document.getElementById('class').value;
+        //     stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+        //     stompClient.send("/app/hello", {}, JSON.stringify({ 'classname': classname }));
+
+
+        //         // setTimeout(function(){
+        //             // console.log("waiting for next data.")
+        //         // },waiting_time);
+
+        // }
         
+        // this is an experimental sendname() function
+        // I will use a recursal way just as the sample do
+        function sendName(times) {
+            var name = document.getElementById('name').value;
+            var classname = document.getElementById('classname').value;
+
+            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
+            // the 2nd property cannot be read temporally
+            
+            // stompClient.send("/app/hello", {}, JSON.stringify({ 'classname': classname }));
+
+            if (times <1)
+            {
+                console.log.out("finish");
+            }
+            times--;
+            var counter = setTimeout('sendName('+times+')',1000);
+        }
+
+
         function showGreeting(message) {
             var response = document.getElementById('response');
             var p = document.createElement('p');
@@ -76,8 +96,9 @@
     Javascript and reload this page!</h2></noscript>
     
     <!-- add a countdown view here -->
-    <div id = "position"></div>
-    <script type = "text/javascript">countdown(3,"position")</script>
+
+    <!-- <div id = "position"></div> -->
+     <!-- // <script type = "text/javascript">countdown(3,"position")</script> -->
 
 <div>
     <div>
@@ -88,9 +109,9 @@
 
     <div id="conversationDiv">
         <label>scipt name:</label><input type="text" id="name" /><br>
-        <label>class name:</label><input type="text" id="report" /><br>
+        <label>class name:</label><input type="text" id="classname" /><br>
         
-        <button id="sendName" onclick="sendName();">Send</button>
+        <button id="sendName" onclick="sendName(10);">Send</button>
         <p id="response"></p>
     </div>
 </div>

@@ -8,4 +8,11 @@ public class HelloMessage {
         return name;
     }
 
+    private String classname;
+    
+    public String getClassName() {
+        return classname;
+    }
+
+
 }

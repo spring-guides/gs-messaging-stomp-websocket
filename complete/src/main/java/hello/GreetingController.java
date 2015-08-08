@@ -28,6 +28,8 @@ public class GreetingController {
         }
 
         return new Greeting("Hello, " + message.getName() + "!"+data);
+        // return new Greeting("Hello, " + message.getClassName() + "!"+data);
+
     }
 
 }
