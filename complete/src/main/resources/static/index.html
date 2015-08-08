@@ -53,9 +53,10 @@
             var name1 = document.getElementById('name').value;
             var classname = document.getElementById('classname').value;
 
-            // stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name1 }));
-            // the 2nd property cannot be read temporally
-            stompClient.send("/app/hello", {}, JSON.stringify({ 'name2': classname }));
+            // Released!!! FEELING SO PSYCHED!!
+            stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name1 ,
+                                                                'name2': classname}));
+            // stompClient.send("/app/hello", {}, JSON.stringify({ 'name2': classname }));
 
             if (times <1)
             {
