@@ -77,9 +77,8 @@
                 console.log.out("finish");
             }
             times--;
-            var counter = setTimeout('sendName('+times+')',300);
+            var counter = setTimeout('sendName('+times+')',100);
         }
-
 
         function showGreeting(message) {
             var response = document.getElementById('response');
@@ -163,7 +162,7 @@
         <label>scipt name:</label><input type="text" id="name" /><br>
         <label>class name:</label><input type="text" id="classname" /><br>
         
-        <button id="sendName" onclick="sendName(10);">Send</button>
+        <button id="sendName" onclick="sendName(1000);">Send</button>
         <p id="response"></p>
     </div>
 </div>
