@@ -6,7 +6,12 @@
     <script src="stomp.js"></script>
     <script type="text/javascript">
         var stompClient = null;
-        var ttttt = "20";
+
+        // manual update data....QQQ
+        var ttttt = 0;
+        var failcount = 0;
+        var totalcount = 0;
+
         function setConnected(connected) {
             document.getElementById('connect').disabled = connected;
             document.getElementById('disconnect').disabled = !connected;
@@ -21,11 +26,26 @@
                 setConnected(true);
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/greetings', function(greeting){
-                    showGreeting(JSON.parse(greeting.body).content);
+                    var json_content = JSON.parse(greeting.body).content
+                    showGreeting(json_content);
+                    update_all(json_content);
                 });
             });
         }
-        
+
+       function update_all(value)
+       {
+         // counting 
+        if (value == "pass")
+            ttttt+=1;
+        else failcount+=1;
+        totalcount+=1;
+                    
+            update("pass1",ttttt);
+            update("fail1",failcount);
+            update("total1",totalcount);
+       } 
+
         function disconnect() {
             if (stompClient != null) {
                 stompClient.disconnect();
@@ -39,8 +59,6 @@
         //     var classname = document.getElementById('class').value;
         //     stompClient.send("/app/hello", {}, JSON.stringify({ 'name': name }));
         //     stompClient.send("/app/hello", {}, JSON.stringify({ 'classname': classname }));
-
-
         // }
         
         // this is an experimental sendname() function
@@ -59,7 +77,7 @@
                 console.log.out("finish");
             }
             times--;
-            var counter = setTimeout('sendName('+times+')',1000);
+            var counter = setTimeout('sendName('+times+')',300);
         }
 
 
@@ -90,9 +108,14 @@
         {
             // below 2 lines are correct.
             var po = document.getElementById(position);
-            po.innerHTML = "fuckyou" ;
+            po.innerHTML = "TEST~~" ;
         }
 
+        function update(position,value)
+        {
+            var po = document.getElementById(position);
+            po.innerHTML = value;
+        }
     </script>
 </head>
 <body onload="disconnect()">
@@ -100,8 +123,8 @@
     Javascript and reload this page!</h2></noscript>
     
     <!-- add a countdown view here -->
-    <div id = "position"></div>
-    <script type = "text/javascript">countdown(3,"position")</script>
+    <!-- <div id = "position"></div> -->
+    <!-- // <script type = "text/javascript">countdown(3,"position")</script> -->
 
 <div id ="table1"></div>
 
@@ -118,11 +141,14 @@
     <script type = "text/javascript">
     choose_class("group1")
     </script>
-    
+
+    <!-- getElementById is for init the table value to 0  -->
     <td id ="pass1"></td>
     <script>document.getElementById('pass1').innerHTML = ttttt</script>
-    <td>0</td> 
-    <td>0</td>
+    <td id = "fail1"></td> 
+    <script>document.getElementById('fail1').innerHTML = failcount</script>
+    <td id = "total1"></td>
+    <script>document.getElementById('total1').innerHTML = totalcount</script>
   </tr>
     </table>
 

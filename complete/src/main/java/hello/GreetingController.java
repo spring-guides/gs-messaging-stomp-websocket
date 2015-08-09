@@ -21,14 +21,18 @@ public class GreetingController {
         if(flag)
         {
         	data = "pass";
+        	// added here 
+        	message.setCV(message.countingvalue+1);
         }
         else
         {
         	data = "fail";
         }
 
+        String countingvalue_string = Integer.toString(message.countingvalue);
         // return new Greeting("Hello, " + message.getName() + "!"+data);
-        return new Greeting("Hello, " + message.getName() + message.getName2()+"!"+data);
+        String out_string1 = "Hello, " + message.getName() + message.getName2();
+        return new Greeting(data,out_string1);
 
     }
 
