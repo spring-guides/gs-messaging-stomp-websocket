@@ -192,3 +192,6 @@ Congratulations! You've just developed a STOMP-based messaging service with Spri
 
 
 
+
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
+
