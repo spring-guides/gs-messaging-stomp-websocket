@@ -1,0 +1,8 @@
+language: java
+jdk:
+- oraclejdk8
+script:
+- test/run.sh
+notifications:
+  slack:
+    secure: ruvE7abmChAHE7OKj3CyXayqI3iUD1so61fbhWZ5XWGHhEaRAgqdfDGC4QdoS07cDVSKPVViUfjesOqfDTa619UxfdH9Lw20YyF0yBH/5m+gGLKU2f/HBFdoY7dQbm4eFtqJMOwIVSYghSbqibhtse3CHDQQsiHxpimFe2rYT9U=
