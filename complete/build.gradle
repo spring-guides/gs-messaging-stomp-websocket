@@ -3,35 +3,34 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.6.RELEASE")
     }
-}
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-apply plugin: 'spring-boot'
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'spring-boot'
 
-jar {
-    baseName = 'gs-messaging-stomp-websocket'
-    version =  '0.1.0'
-}
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+    jar {
+        baseName = 'gs-messaging-stomp-websocket'
+        version = '0.1.0'
+    }
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-websocket")
-    compile("org.springframework:spring-messaging")
-    testCompile("junit:junit")
-}
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-websocket")
+        compile("org.springframework.boot:spring-boot-starter-web")
+        compile("org.springframework:spring-messaging")
+        testCompile("junit:junit")
+    }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
+    task wrapper(type: Wrapper) {
+        gradleVersion = '2.6'
+    }
 }
