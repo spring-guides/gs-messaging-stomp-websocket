@@ -4,15 +4,11 @@ projects: [spring-framework]
 ---
 :spring_version: current
 :spring_boot_version: 1.4.0.RELEASE
-:MappingJackson2MessageConverter: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/support/converter/MappingJackson2MessageConverter.html
 :jackson: http://wiki.fasterxml.com/JacksonHome
 :AtMessageMapping: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
 :AtController: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
-:AtEnableWebSocket: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/socket/server/config/EnableWebSocket.html
 :AtEnableWebSocketMessageBroker: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/simp/config/EnableWebSocketMessageBroker.html
-:SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
 :Stomp_JS: http://jmesnil.net/stomp-websocket/doc/
-:DispatcherServlet: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/servlet/DispatcherServlet.html
 :AtSendTo: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/SendTo.html
 :toc:
 :icons: font
@@ -31,12 +27,9 @@ You'll build a server that will accept a message carrying a user's name. In resp
 == What you'll need
 
 :java_version: 1.8
-:java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
 
-
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
-
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-gradle.adoc[]
 
@@ -107,9 +100,9 @@ The {AtMessageMapping}[`@MessageMapping`] annotation ensures that if a message i
 
 The payload of the message is bound to a `HelloMessage` object which is passed into `greeting()`. 
 
-Internally, the implementation of the method simulates a processing delay by causing the thread to sleep for 3 seconds. This is to demonstrate that after the client sends a message, the server can take as long as it needs to process the message asynchronously.  The client may continue with whatever work it needs to do without waiting on the response.
+Internally, the implementation of the method simulates a processing delay by causing the thread to sleep for 1 second. This is to demonstrate that after the client sends a message, the server can take as long as it needs to process the message asynchronously.  The client may continue with whatever work it needs to do without waiting on the response.
 
-After the 3 second delay, the `greeting()` method creates a `Greeting` object and returns it. The return value is broadcast to all subscribers to "/topic/greetings" as specified in the {AtSendTo}[`@SendTo`] annotation.
+After the 1 second delay, the `greeting()` method creates a `Greeting` object and returns it. The return value is broadcast to all subscribers to "/topic/greetings" as specified in the {AtSendTo}[`@SendTo`] annotation.
 
 == Configure Spring for STOMP messaging
 
@@ -130,9 +123,10 @@ As its name suggests, `@EnableWebSocketMessageBroker` enables WebSocket message 
 The `configureMessageBroker()` method overrides the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
 It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/topic".
 It also designates the "/app" prefix for messages that are bound for `@MessageMapping`-annotated methods.
+This prefix will be used to define all the message mappings; for example, "/app/hello" is the endpoint that the `GreetingController.greeting()` method is mapped to handle.
 
-The `registerStompEndpoints()` method registers the "/hello" endpoint, enabling SockJS fallback options so that alternative messaging options may be used if WebSocket is not available.
-This endpoint, when prefixed with "/app", is the endpoint that the `GreetingController.greeting()` method is mapped to handle.
+The `registerStompEndpoints()` method registers the "/gs-guide-websocket" endpoint, enabling SockJS fallback options so that alternate transports may be used if WebSocket is not available. The SockJS client will attempt to connect to "/gs-guide-websocket" and use the best transport available (websocket, xhr-streaming, xhr-polling, etc).
+
 
 == Create a browser client
 
@@ -146,9 +140,20 @@ Create an index.html file that looks like this:
 include::complete/src/main/resources/static/index.html[]
 ----
 
-The main piece of this HTML file to pay attention to is the JavaScript code in the `connect()` and `sendName()` functions.
+This HTML file imports the `SockJS` and `STOMP` javascript libraries that will be used to communicate with our server
+using STOMP over websocket. We're also importing here an `app.js` which contains the logic of our client application.
 
-The `connect()` function uses https://github.com/sockjs[SockJS] and {Stomp_JS}[stomp.js] to open a connection to "/gs-messaging-stomp-websocket/hello", which is where `GreetingController` is waiting for connections. Upon a successful connection, it subscribes to the "/topic/greetings" destination, where the server will publish greeting messages. When a greeting is received on that destination, it will append a paragraph element to the DOM to display the greeting message.
+Let's create that file:
+
+`src/main/resources/static/app.js`
+[source,javascript]
+----
+include::complete/src/main/resources/static/app.js[]
+----
+
+The main piece of this JavaScript file to pay attention to is the `connect()` and `sendName()` functions.
+
+The `connect()` function uses https://github.com/sockjs[SockJS] and {Stomp_JS}[stomp.js] to open a connection to "/gs-guide-websocket", which is where our SockJS server is waiting for connections. Upon a successful connection, the client subscribes to the "/topic/greetings" destination, where the server will publish greeting messages. When a greeting is received on that destination, it will append a paragraph element to the DOM to display the greeting message.
 
 The `sendName()` function retrieves the name entered by the user and uses the STOMP client to send it to the "/app/hello" destination (where `GreetingController.greeting()` will receive it).
 
