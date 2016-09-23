@@ -3,7 +3,7 @@ tags: [messaging, websocket, stomp]
 projects: [spring-framework]
 ---
 :spring_version: current
-:spring_boot_version: 1.4.0.RELEASE
+:spring_boot_version: 1.4.1.RELEASE
 :jackson: http://wiki.fasterxml.com/JacksonHome
 :AtMessageMapping: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
 :AtController: http://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
