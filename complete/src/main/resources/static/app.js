@@ -21,6 +21,9 @@ function connect() {
         stompClient.subscribe('/topic/greetings', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
+        stompClient.subscribe('/chat_messages', function (message) {
+            addMessage(JSON.parse(message.body));
+        });
     });
 }
 
@@ -33,12 +36,44 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    var message = {
+      'name': $("#name").val()
+    };
+
+    stompClient.send("/app/hello", {}, JSON.stringify(message));
+}
+
+function sendMessage() {
+    var message = {
+      'emitter': $("#name").val(),
+      'content': $('#message').val()
+    };
+
+    console.log('Sending message : ' + message);
+
+    stompClient.send("/app/message", {}, JSON.stringify(message));
 }
 
 function showGreeting(message) {
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
 }
+
+function addMessage(message) {
+    var messageDate = formatDate(new Date(message.emissionDate))
+    $("#messages").append("<tr><td>" + message.emitter + ' (' + messageDate + ') ' + ' : ' + message.content + "</td></tr>");
+}
+
+function formatDate(date) {
+  var mm = date.getMonth() + 1; // getMonth() is zero-based
+  var dd = date.getDate();
+
+  return [(dd>9 ? '' : '0') + dd,
+          '/',
+          (mm>9 ? '' : '0') + mm,
+          '/',
+          date.getFullYear()
+         ].join('');
+};
 
 $(function () {
     $("form").on('submit', function (e) {
@@ -47,5 +82,5 @@ $(function () {
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
+    $( "#sendMessage" ).click(function() { sendMessage(); });
 });
-
