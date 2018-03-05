@@ -120,7 +120,7 @@ include::complete/src/main/java/hello/WebSocketConfig.java[]
 It is also annotated {AtEnableWebSocketMessageBroker}[`@EnableWebSocketMessageBroker`].
 As its name suggests, `@EnableWebSocketMessageBroker` enables WebSocket message handling, backed by a message broker.
 
-The `configureMessageBroker()` method overrides the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
+The `configureMessageBroker()` method implements the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
 It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/topic".
 It also designates the "/app" prefix for messages that are bound for `@MessageMapping`-annotated methods.
 This prefix will be used to define all the message mappings; for example, "/app/hello" is the endpoint that the `GreetingController.greeting()` method is mapped to handle.

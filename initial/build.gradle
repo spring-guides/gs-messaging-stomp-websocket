@@ -3,13 +3,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.10.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 jar {
     baseName = 'gs-messaging-stomp-websocket'
@@ -24,7 +25,7 @@ repositories {
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket")
-    compile("org.webjars:webjars-locator")
+    compile("org.webjars:webjars-locator-core")
     compile("org.webjars:sockjs-client:1.0.2")
     compile("org.webjars:stomp-websocket:2.3.3")
     compile("org.webjars:bootstrap:3.3.7")
