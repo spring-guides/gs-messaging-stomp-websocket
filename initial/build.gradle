@@ -12,7 +12,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-jar {
+bootJar {
     baseName = 'gs-messaging-stomp-websocket'
     version =  '0.1.0'
 }
