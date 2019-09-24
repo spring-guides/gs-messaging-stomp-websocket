@@ -1,4 +1,4 @@
-package hello;
+package com.example.messagingstompwebsocket;
 
 import static org.junit.Assert.*;
 

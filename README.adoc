@@ -11,160 +11,312 @@
 :source-highlighter: prettify
 :project_id: gs-messaging-stomp-websocket
 
-This guide walks you through the process of creating a "hello world" application that sends messages back and forth, between a browser and the server.
-WebSocket is a very thin, lightweight layer above TCP. It makes it very suitable to use "subprotocols" to embed messages. In this
-guide we'll dive in and use https://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol[STOMP] messaging with Spring
-to create an interactive web application.
+This guide walks you through the process of creating a "`Hello, world`" application that
+sends messages back and forth between a browser and a server. WebSocket is a thin,
+lightweight layer above TCP. This makes it suitable for using "`subprotocols`" to embed
+messages. In this guide, we use
+http://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol[STOMP] messaging
+with Spring to create an interactive web application.
 
-== What you'll build
+== What You Will build
 
-You'll build a server that will accept a message carrying a user's name. In response, it will push a greeting into a queue that the client is subscribed to.
+You will build a server that accepts a message that carries a user's name. In response,
+the server will push a greeting into a queue to which the client is subscribed.
 
-== What you'll need
+== What You Need
 
 :java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-gradle.adoc[]
+[[scratch]]
+== Starting with Spring Initializr
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-maven.adoc[]
+For all Spring applications, you should start with the https://start.spring.io[Spring
+Initializr]. The Initializr offers a fast way to pull in all the dependencies you need for
+an application and does a lot of the set up for you. This example needs only the Websocket
+dependency. The following image shows the Initializr set up for this sample project:
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/hide-show-sts.adoc[]
+image::images/initializr.png[]
 
+NOTE: The preceding image shows the Initializr with Maven chosen as the build tool. You
+can also use Gradle. It also shows values of `com.example` and `messaging-stomp-websocket`
+as the Group and Artifact, respectively. You will use those values throughout the rest of
+this sample.
 
+The following listing shows the `pom.xml` file that is created when you choose Maven:
+
+====
+[src,xml]
+----
+include::initial/pom.xml[]
+----
+====
+
+The following listing shows the `build.gradle` file that is created when you choose Gradle:
+
+====
+[src,java]
+----
+include::initial/build.gradle[]
+----
+====
+
+== Adding Dependencies
+
+The Spring Initializr does not provide everything you need in this case. For Maven, you
+need to add the following dependencies:
+
+====
+[source,xml]
+----
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>webjars-locator-core</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>sockjs-client</artifactId>
+  <version>1.0.2</version>
+</dependency>
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>stomp-websocket</artifactId>
+  <version>2.3.3</version>
+</dependency>
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>bootstrap</artifactId>
+  <version>3.3.7</version>
+</dependency>
+<dependency>
+  <groupId>org.webjars</groupId>
+  <artifactId>jquery</artifactId>
+  <version>3.1.0</version>
+</dependency>
+----
+====
+
+The following listing shows the finished `pom.xml` file:
+
+====
+[src,xml]
+----
+include::initial/pom.xml[]
+----
+====
+
+If you use Gradle, you need to add the following dependencies:
+
+====
+[source,java]
+----
+implementation 'org.webjars:webjars-locator-core'
+implementation 'org.webjars:sockjs-client:1.0.2'
+implementation 'org.webjars:stomp-websocket:2.3.3'
+implementation 'org.webjars:bootstrap:3.3.7'
+implementation 'org.webjars:jquery:3.1.0'
+----
+====
+
+The following listing shows the finished `build.gradle` file:
+
+====
+[src,java]
+----
+include::initial/build.gradle[]
+----
+====
 
 [[initial]]
-== Create a resource representation class
+== Create a Resource Representation Class
 
-Now that you've set up the project and build system, you can create your STOMP message service.
+Now that you have set up the project and build system, you can create your STOMP message
+service.
 
 Begin the process by thinking about service interactions.
 
-The service will accept messages containing a name in a STOMP message whose body is a link:/understanding/JSON[JSON] object. If the name given is "Fred", then the message might look something like this:
+The service will accept messages that contain a name in a STOMP message whose body is a
+JSON object. If the name is `Fred`, the message might resemble the following:
 
+====
 [source,json]
 ----
 {
     "name": "Fred"
 }
 ----
+====
 
-To model the message carrying the name, you can create a plain old Java object with a `name` property and a corresponding `getName()` method:
+To model the message that carries the name, you can create a plain old Java object with a
+`name` property and a corresponding `getName()` method, as the following listing (from
+`src/main/java/com/example/messagingstompwebsocket/HelloMessage.java`) shows:
 
-`src/main/java/hello/HelloMessage.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/HelloMessage.java[]
+include::complete/src/main/java/com/example/messagingstompwebsocket/HelloMessage.java[]
 ----
+====
 
-Upon receiving the message and extracting the name, the service will process it by creating a greeting and publishing that greeting on a separate queue that the client is subscribed to. The greeting will also be a JSON object, which might look something like this:
+Upon receiving the message and extracting the name, the service will process it by
+creating a greeting and publishing that greeting on a separate queue to which the client
+is subscribed. The greeting will also be a JSON object, which as the following listing
+shows:
 
+====
 [source,json]
 ----
 {
     "content": "Hello, Fred!"
 }
 ----
+====
 
-To model the greeting representation, you add another plain old Java object with a `content` property and corresponding `getContent()` method:
+To model the greeting representation, add another plain old Java object with a `content`
+property and a corresponding `getContent()` method, as the following listing (from
+`src/main/java/com/example/messagingstompwebsocket/Greeting.java`) shows:
 
-`src/main/java/hello/Greeting.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/Greeting.java[]
+include::complete/src/main/java/com/example/messagingstompwebsocket/Greeting.java[]
 ----
+====
 
-Spring will use the {jackson}[Jackson JSON] library to automatically marshal instances of type `Greeting` into JSON.
+Spring will use the {jackson}[Jackson JSON] library to automatically marshal instances of
+type `Greeting` into JSON.
 
-Next, you'll create a controller to receive the hello message and send a greeting message.
+Next, you will create a controller to receive the hello message and send a greeting
+message.
 
-== Create a message-handling controller
+== Create a Message-handling Controller
 
-In Spring's approach to working with STOMP messaging, STOMP messages can be routed to {AtController}[`@Controller`] classes. For example the `GreetingController` is mapped to handle messages to destination "/hello".
+In Spring's approach to working with STOMP messaging, STOMP messages can be routed to
+{AtController}[`@Controller`] classes. For example, the `GreetingController` (from
+`src/main/java/com/example/messagingstompwebsocket/GreetingController.java`) is mapped to
+handle messages to the `/hello` destination, as the following listing shows:
 
-`src/main/java/hello/GreetingController.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/GreetingController.java[]
+include::complete/src/main/java/com/example/messagingstompwebsocket/GreetingController.java[]
 ----
+====
 
-This controller is concise and simple, but there's plenty going on. Let's break it down step by step.
+This controller is concise and simple, but plenty is going on. We break it down step by
+step.
 
-The {AtMessageMapping}[`@MessageMapping`] annotation ensures that if a message is sent to destination "/hello", then the `greeting()` method is called.
+The {AtMessageMapping}[`@MessageMapping`] annotation ensures that, if a message is sent to
+the `/hello` destination, the `greeting()` method is called.
 
-The payload of the message is bound to a `HelloMessage` object which is passed into `greeting()`.
+The payload of the message is bound to a `HelloMessage` object, which is passed into
+`greeting()`.
 
-Internally, the implementation of the method simulates a processing delay by causing the thread to sleep for 1 second. This is to demonstrate that after the client sends a message, the server can take as long as it needs to process the message asynchronously.  The client may continue with whatever work it needs to do without waiting on the response.
+Internally, the implementation of the method simulates a processing delay by causing the
+thread to sleep for one second. This is to demonstrate that, after the client sends a
+message, the server can take as long as it needs to asynchronously process the message.
+The client can continue with whatever work it needs to do without waiting for the
+response.
 
-After the 1 second delay, the `greeting()` method creates a `Greeting` object and returns it. The return value is broadcast to all subscribers to "/topic/greetings" as specified in the {AtSendTo}[`@SendTo`] annotation. Note that the name from the input message is sanitized since in this case it will be echoed back and re-rendered in the browser DOM on the client side.
+After the one-second delay, the `greeting()` method creates a `Greeting` object and
+returns it. The return value is broadcast to all subscribers of `/topic/greetings`, as
+specified in the {AtSendTo}[`@SendTo`] annotation. Note that the name from the input
+message is sanitized, since, in this case, it will be echoed back and re-rendered in the
+browser DOM on the client side.
 
 == Configure Spring for STOMP messaging
 
-Now that the essential components of the service are created, you can configure Spring to enable WebSocket and STOMP messaging.
+Now that the essential components of the service are created, you can configure Spring to
+enable WebSocket and STOMP messaging.
 
-Create a Java class named `WebSocketConfig` that looks like this:
+Create a Java class named `WebSocketConfig` that resembles the following listing (from
+`src/main/java/com/example/messagingstompwebsocket/WebSocketConfig.java`):
 
-`src/main/java/hello/WebSocketConfig.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/WebSocketConfig.java[]
+include::complete/src/main/java/com/example/messagingstompwebsocket/WebSocketConfig.java[]
 ----
+====
 
-`WebSocketConfig` is annotated with `@Configuration` to indicate that it is a Spring configuration class.
-It is also annotated {AtEnableWebSocketMessageBroker}[`@EnableWebSocketMessageBroker`].
-As its name suggests, `@EnableWebSocketMessageBroker` enables WebSocket message handling, backed by a message broker.
+`WebSocketConfig` is annotated with `@Configuration` to indicate that it is a Spring
+configuration class. It is also annotated with
+{AtEnableWebSocketMessageBroker}[`@EnableWebSocketMessageBroker`]. As its name suggests,
+`@EnableWebSocketMessageBroker` enables WebSocket message handling, backed by a message
+broker.
 
-The `configureMessageBroker()` method implements the default method in `WebSocketMessageBrokerConfigurer` to configure the message broker.
-It starts by calling `enableSimpleBroker()` to enable a simple memory-based message broker to carry the greeting messages back to the client on destinations prefixed with "/topic".
-It also designates the "/app" prefix for messages that are bound for `@MessageMapping`-annotated methods.
-This prefix will be used to define all the message mappings; for example, "/app/hello" is the endpoint that the `GreetingController.greeting()` method is mapped to handle.
+The `configureMessageBroker()` method implements the default method in
+`WebSocketMessageBrokerConfigurer` to configure the message broker. It starts by calling
+`enableSimpleBroker()` to enable a simple memory-based message broker to carry the
+greeting messages back to the client on destinations prefixed with `/topic`. It also
+designates the `/app` prefix for messages that are bound for methods annotated with
+`@MessageMapping`. This prefix will be used to define all the message mappings. For
+example, `/app/hello` is the endpoint that the `GreetingController.greeting()` method is
+mapped to handle.
 
-The `registerStompEndpoints()` method registers the "/gs-guide-websocket" endpoint, enabling SockJS fallback options so that alternate transports may be used if WebSocket is not available. The SockJS client will attempt to connect to "/gs-guide-websocket" and use the best transport available (websocket, xhr-streaming, xhr-polling, etc).
+The `registerStompEndpoints()` method registers the `/gs-guide-websocket` endpoint,
+enabling SockJS fallback options so that alternate transports can be used if WebSocket is
+not available. The SockJS client will attempt to connect to `/gs-guide-websocket` and use
+the best available transport (websocket, xhr-streaming, xhr-polling, and so on).
 
+== Create a Browser Client
 
-== Create a browser client
+With the server-side pieces in place, you can turn your attention to the JavaScript client
+that will send messages to and receive messages from the server side.
 
-With the server side pieces in place, now let's turn our attention to the JavaScript client that will send messages to and receive messages from the server side.
+Create an `index.html` file similar to the following listing (from
+`src/main/resources/static/index.html`):
 
-Create an index.html file that looks like this:
-
-`src/main/resources/static/index.html`
+====
 [source,html]
 ----
 include::complete/src/main/resources/static/index.html[]
 ----
+====
 
-This HTML file imports the `SockJS` and `STOMP` javascript libraries that will be used to communicate with our server
-using STOMP over websocket. We're also importing here an `app.js` which contains the logic of our client application.
+This HTML file imports the `SockJS` and `STOMP` javascript libraries that will be used to
+communicate with our server through STOMP over websocket. We also import `app.js`, which
+contains the logic of our client application. The following listing (from
+`src/main/resources/static/app.js`) shows that file:
 
-Let's create that file:
-
-`src/main/resources/static/app.js`
-[source,java,tabsize=2script]
+====
+[source,javascript]
 ----
 include::complete/src/main/resources/static/app.js[]
 ----
+====
 
-The main piece of this JavaScript file to pay attention to is the `connect()` and `sendName()` functions.
+The main pieces of this JavaScript file to understand are the `connect()` and `sendName()`
+functions.
 
-The `connect()` function uses https://github.com/sockjs[SockJS] and {Stomp_JS}[stomp.js] to open a connection to "/gs-guide-websocket", which is where our SockJS server is waiting for connections. Upon a successful connection, the client subscribes to the "/topic/greetings" destination, where the server will publish greeting messages. When a greeting is received on that destination, it will append a paragraph element to the DOM to display the greeting message.
+The `connect()` function uses https://github.com/sockjs[SockJS] and {Stomp_JS}[stomp.js]
+to open a connection to `/gs-guide-websocket`, which is where our SockJS server waits for
+connections. Upon a successful connection, the client subscribes to the `/topic/greetings`
+destination, where the server will publish greeting messages. When a greeting is received
+on that destination, it will append a paragraph element to the DOM to display the greeting
+message.
 
-The `sendName()` function retrieves the name entered by the user and uses the STOMP client to send it to the "/app/hello" destination (where `GreetingController.greeting()` will receive it).
+The `sendName()` function retrieves the name entered by the user and uses the STOMP client
+to send it to the `/app/hello` destination (where `GreetingController.greeting()` will
+receive it).
 
-== Make the application executable
+== Make the Application Executable
 
-Although it is possible to package this service as a traditional link:/understanding/WAR[WAR] file for deployment to an external application server, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. Along the way, you use Spring's support for embedding the link:/understanding/Tomcat[Tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
+Spring Boot creates an application class for you. In this case, it needs no further
+modification. You can use it to run this application. The following listing (from
+`src/main/java/com/example/messagingstompwebsocket/MessagingStompWebsocketApplication.java`)
+shows the application class:
 
-
-`src/main/java/hello/Application.java`
-[source,java,tabsize=2]
+====
+[source,java]
 ----
-include::complete/src/main/java/hello/Application.java[]
+include::complete/src/main/java/com/example/messagingstompwebsocket/MessagingStompWebsocketApplication.java[]
 ----
+====
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application-new-path.adoc[]
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 
@@ -175,14 +327,17 @@ Logging output is displayed. The service should be up and running within a few s
 
 == Test the service
 
-Now that the service is running, point your browser at http://localhost:8080 and click the "Connect" button.
+Now that the service is running, point your browser at http://localhost:8080 and click the *Connect* button.
 
-Upon opening a connection, you are asked for your name. Enter your name and click "Send". Your name is sent to the server as a JSON message over STOMP. After a 1-second simulated delay, the server sends a message back with a "Hello" greeting that is displayed on the page. At this point, you can send another name, or you can click the "Disconnect" button to close the connection.
-
+Upon opening a connection, you are asked for your name. Enter your name and click *Send*.
+Your name is sent to the server as a JSON message over STOMP. After a one-second simulated
+delay, the server sends a message back with a "`Hello`" greeting that is displayed on the
+page. At this point, you can send another name or you can click the *Disconnect* button to
+close the connection.
 
 == Summary
 
-Congratulations! You've just developed a STOMP-based messaging service with Spring.
+Congratulations! You have just developed a STOMP-based messaging service with Spring.
 
 == See Also
 
