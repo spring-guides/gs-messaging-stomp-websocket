@@ -54,7 +54,7 @@ The service will accept messages containing a name in a STOMP message whose body
 To model the message carrying the name, you can create a plain old Java object with a `name` property and a corresponding `getName()` method:
 
 `src/main/java/hello/HelloMessage.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/HelloMessage.java[]
 ----
@@ -71,7 +71,7 @@ Upon receiving the message and extracting the name, the service will process it 
 To model the greeting representation, you add another plain old Java object with a `content` property and corresponding `getContent()` method:
 
 `src/main/java/hello/Greeting.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/Greeting.java[]
 ----
@@ -85,7 +85,7 @@ Next, you'll create a controller to receive the hello message and send a greetin
 In Spring's approach to working with STOMP messaging, STOMP messages can be routed to {AtController}[`@Controller`] classes. For example the `GreetingController` is mapped to handle messages to destination "/hello".
 
 `src/main/java/hello/GreetingController.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/GreetingController.java[]
 ----
@@ -107,7 +107,7 @@ Now that the essential components of the service are created, you can configure 
 Create a Java class named `WebSocketConfig` that looks like this:
 
 `src/main/java/hello/WebSocketConfig.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/WebSocketConfig.java[]
 ----
@@ -142,7 +142,7 @@ using STOMP over websocket. We're also importing here an `app.js` which contains
 Let's create that file:
 
 `src/main/resources/static/app.js`
-[source,javascript]
+[source,java,tabsize=2script]
 ----
 include::complete/src/main/resources/static/app.js[]
 ----
@@ -159,7 +159,7 @@ Although it is possible to package this service as a traditional link:/understan
 
 
 `src/main/java/hello/Application.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/Application.java[]
 ----
