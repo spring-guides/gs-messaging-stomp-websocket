@@ -15,6 +15,7 @@ build/
 .classpath
 .project
 .settings
+.attach_pid*
 
 # IntelliJ IDEA Files #
 
@@ -22,6 +23,9 @@ build/
 *.ipr
 *.iws
 *.idea
+
+# VSCode Files #
+.vscode/
 
 # Spring Bootstrap artifacts
 
