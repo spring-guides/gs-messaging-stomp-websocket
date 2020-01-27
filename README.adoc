@@ -154,7 +154,7 @@ To model the message that carries the name, you can create a plain old Java obje
 `src/main/java/com/example/messagingstompwebsocket/HelloMessage.java`) shows:
 
 ====
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/com/example/messagingstompwebsocket/HelloMessage.java[]
 ----
@@ -179,7 +179,7 @@ property and a corresponding `getContent()` method, as the following listing (fr
 `src/main/java/com/example/messagingstompwebsocket/Greeting.java`) shows:
 
 ====
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/com/example/messagingstompwebsocket/Greeting.java[]
 ----
@@ -199,7 +199,7 @@ In Spring's approach to working with STOMP messaging, STOMP messages can be rout
 handle messages to the `/hello` destination, as the following listing shows:
 
 ====
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/com/example/messagingstompwebsocket/GreetingController.java[]
 ----
@@ -235,7 +235,7 @@ Create a Java class named `WebSocketConfig` that resembles the following listing
 `src/main/java/com/example/messagingstompwebsocket/WebSocketConfig.java`):
 
 ====
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/com/example/messagingstompwebsocket/WebSocketConfig.java[]
 ----
@@ -282,7 +282,7 @@ contains the logic of our client application. The following listing (from
 `src/main/resources/static/app.js`) shows that file:
 
 ====
-[source,javascript]
+[source,javascript,tabsize=2]
 ----
 include::complete/src/main/resources/static/app.js[]
 ----
@@ -310,7 +310,7 @@ modification. You can use it to run this application. The following listing (fro
 shows the application class:
 
 ====
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/com/example/messagingstompwebsocket/MessagingStompWebsocketApplication.java[]
 ----
