@@ -21,6 +21,12 @@ function connect() {
         stompClient.subscribe('/topic/greetings', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
+        // get session Id from url like "ws://localhost:8080/gs-guide-websocket/791/14pckehf/websocket"
+        var sessionId = /\/([^\/]+)\/websocket/.exec(socket._transport.url)[1];
+        console.log(sessionId);
+        stompClient.subscribe('/user/' + sessionId + '/topic/greetings', function (greeting) {
+            showGreeting(JSON.parse(greeting.body).content);
+        });
     });
 }
 
@@ -32,8 +38,12 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+function sendName1() {
+    stompClient.send("/app/hello/everyone", {}, JSON.stringify({'name': $("#name").val()}));
+}
+
+function sendName2() {
+    stompClient.send("/app/hello/user", {}, JSON.stringify({'name': $("#name").val()}));
 }
 
 function showGreeting(message) {
@@ -46,6 +56,7 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    $( "#send1" ).click(function() { sendName1(); });
+    $( "#send2" ).click(function() { sendName2(); });
 });
 

@@ -70,7 +70,7 @@ public class GreetingIntegrationTests {
 					public void handleFrame(StompHeaders headers, Object payload) {
 						Greeting greeting = (Greeting) payload;
 						try {
-							assertEquals("Hello, Spring!", greeting.getContent());
+							assertEquals("Hello everyone, I am Spring!", greeting.getContent());
 						} catch (Throwable t) {
 							failure.set(t);
 						} finally {
@@ -80,7 +80,7 @@ public class GreetingIntegrationTests {
 					}
 				});
 				try {
-					session.send("/app/hello", new HelloMessage("Spring"));
+					session.send("/app/hello/everyone", new HelloMessage("Spring"));
 				} catch (Throwable t) {
 					failure.set(t);
 					latch.countDown();
@@ -100,6 +100,58 @@ public class GreetingIntegrationTests {
 		}
 
 	}
+
+    @Test
+    public void getGreetingToUser() throws Exception {
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Throwable> failure = new AtomicReference<>();
+
+        StompSessionHandler handler = new TestSessionHandler(failure) {
+
+            @Override
+            public void afterConnected(final StompSession session, StompHeaders connectedHeaders) {
+                session.subscribe("/topic/greetings", new StompFrameHandler() {
+                    @Override
+                    public Type getPayloadType(StompHeaders headers) {
+                        return Greeting.class;
+                    }
+
+                    @Override
+                    public void handleFrame(StompHeaders headers, Object payload) {
+                        Greeting greeting = (Greeting) payload;
+                        try {
+                            assertEquals("Hello everyone, I am Spring!", greeting.getContent());
+                        } catch (Throwable t) {
+                            failure.set(t);
+                        } finally {
+                            session.disconnect();
+                            latch.countDown();
+                        }
+                    }
+                });
+                try {
+                    session.send("/app/hello/user", new HelloMessage("Spring"));
+                } catch (Throwable t) {
+                    failure.set(t);
+                    latch.countDown();
+                }
+            }
+        };
+
+        this.stompClient.connect("ws://localhost:{port}/gs-guide-websocket", this.headers, handler, this.port);
+
+        // will not receive the message unless subscribe destination like "/user/{sessionId}/topic/greetings" 
+        if (latch.await(3, TimeUnit.SECONDS)) {
+            if (failure.get() != null) {
+                throw new AssertionError("", failure.get());
+            }
+        }
+        else {
+            // fail("Greeting not received");
+        }
+
+    }
 
 	private class TestSessionHandler extends StompSessionHandlerAdapter {
 
