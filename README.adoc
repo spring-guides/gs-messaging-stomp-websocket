@@ -295,6 +295,9 @@ The `sendName()` function retrieves the name entered by the user and uses the ST
 to send it to the `/app/hello` destination (where `GreetingController.greeting()` will
 receive it).
 
+The `main.css` can be omitted if you like, or you can create an empty
+one, just so the `<link>` can be resolved.
+
 == Make the Application Executable
 
 Spring Boot creates an application class for you. In this case, it needs no further
