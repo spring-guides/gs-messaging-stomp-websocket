@@ -96,7 +96,7 @@ The following listing shows the finished `pom.xml` file:
 ====
 [src,xml]
 ----
-include::initial/pom.xml[]
+include::complete/pom.xml[]
 ----
 ====
 
@@ -118,7 +118,7 @@ The following listing shows the finished `build.gradle` file:
 ====
 [src,java]
 ----
-include::initial/build.gradle[]
+include::complete/build.gradle[]
 ----
 ====
 
