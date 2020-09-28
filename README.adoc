@@ -16,7 +16,8 @@ sends messages back and forth between a browser and a server. WebSocket is a thi
 lightweight layer above TCP. This makes it suitable for using "`subprotocols`" to embed
 messages. In this guide, we use
 http://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol[STOMP] messaging
-with Spring to create an interactive web application.
+with Spring to create an interactive web application. STOMP is a subprotocol operating
+on top of the lower-level WebSocket.
 
 == What You Will build
 
