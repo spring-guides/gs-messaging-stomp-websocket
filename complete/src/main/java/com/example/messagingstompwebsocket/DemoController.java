@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.messagingstompwebsocket;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
