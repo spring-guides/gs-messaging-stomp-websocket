@@ -25,7 +25,6 @@ the server will push a greeting into a queue to which the client is subscribed.
 
 == What You Need
 
-:java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/prereq_editor_jdk_buildtools.adoc[]
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/how_to_complete_this_guide.adoc[]
@@ -33,7 +32,7 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 [[scratch]]
 == Starting with Spring Initializr
 
-You can use this https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.5.5&packaging=jar&jvmVersion=11&groupId=com.example&artifactId=messaging-stomp-websocket&name=messaging-stomp-websocket&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.messaging-stomp-websocket&dependencies=websocket[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
+You can use this https://start.spring.io/#!type=maven-project&groupId=com.example&artifactId=messaging-stomp-websocket&name=messaging-stomp-websocket&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.messaging-stomp-websocket&dependencies=websocket[pre-initialized project] and click Generate to download a ZIP file. This project is configured to fit the examples in this tutorial.
 
 To manually initialize the project:
 
