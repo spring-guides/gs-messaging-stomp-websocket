@@ -47,72 +47,7 @@ NOTE: If your IDE has the Spring Initializr integration, you can complete this p
 
 NOTE: You can also fork the project from Github and open it in your IDE or other editor.
 
-== Adding Dependencies
-
-The Spring Initializr does not provide everything you need in this case. For Maven, you
-need to add the following dependencies:
-
-====
-[source,xml]
-----
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>webjars-locator-core</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>sockjs-client</artifactId>
-  <version>1.0.2</version>
-</dependency>
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>stomp-websocket</artifactId>
-  <version>2.3.3</version>
-</dependency>
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>bootstrap</artifactId>
-  <version>3.3.7</version>
-</dependency>
-<dependency>
-  <groupId>org.webjars</groupId>
-  <artifactId>jquery</artifactId>
-  <version>3.1.1-1</version>
-</dependency>
-----
-====
-
-The following listing shows the finished `pom.xml` file:
-
-====
-[src,xml]
-----
-include::complete/pom.xml[]
-----
-====
-
-If you use Gradle, you need to add the following dependencies:
-
-====
-[source,java]
-----
-implementation 'org.webjars:webjars-locator-core'
-implementation 'org.webjars:sockjs-client:1.0.2'
-implementation 'org.webjars:stomp-websocket:2.3.3'
-implementation 'org.webjars:bootstrap:3.3.7'
-implementation 'org.webjars:jquery:3.1.1-1'
-----
-====
-
-The following listing shows the finished `build.gradle` file:
-
-====
-[src,java]
-----
-include::complete/build.gradle[]
-----
-====
-
+===
 [[initial]]
 == Create a Resource Representation Class
 
@@ -240,10 +175,7 @@ designates the `/app` prefix for messages that are bound for methods annotated w
 example, `/app/hello` is the endpoint that the `GreetingController.greeting()` method is
 mapped to handle.
 
-The `registerStompEndpoints()` method registers the `/gs-guide-websocket` endpoint,
-enabling SockJS fallback options so that alternate transports can be used if WebSocket is
-not available. The SockJS client will attempt to connect to `/gs-guide-websocket` and use
-the best available transport (websocket, xhr-streaming, xhr-polling, and so on).
+The `registerStompEndpoints()` method registers the `/gs-guide-websocket` endpoint for websockets' connections.
 
 == Create a Browser Client
 
@@ -260,7 +192,7 @@ include::complete/src/main/resources/static/index.html[]
 ----
 ====
 
-This HTML file imports the `SockJS` and `STOMP` javascript libraries that will be used to
+This HTML file imports the `STOMPJS` javascript library that will be used to
 communicate with our server through STOMP over websocket. We also import `app.js`, which
 contains the logic of our client application. The following listing (from
 `src/main/resources/static/app.js`) shows that file:
@@ -272,11 +204,11 @@ include::complete/src/main/resources/static/app.js[]
 ----
 ====
 
-The main pieces of this JavaScript file to understand are the `connect()` and `sendName()`
+The main pieces of this JavaScript file to understand are the `stompClient.onConnect` and `sendName`
 functions.
 
-The `connect()` function uses https://github.com/sockjs[SockJS] and {Stomp_JS}[stomp.js]
-to open a connection to `/gs-guide-websocket`, which is where our SockJS server waits for
+`stompClient` is initialized with `brokerURL` referring to path `/gs-guide-websocket`,
+which is where our websockets server waits for
 connections. Upon a successful connection, the client subscribes to the `/topic/greetings`
 destination, where the server will publish greeting messages. When a greeting is received
 on that destination, it will append a paragraph element to the DOM to display the greeting
@@ -330,6 +262,7 @@ Congratulations! You have just developed a STOMP-based messaging service with Sp
 
 The following guides may also be helpful:
 
+* https://stomp-js.github.io/[StompJS client library docs]
 * https://spring.io/guides/gs/serving-web-content/[Serving Web Content with Spring MVC]
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot]
 
