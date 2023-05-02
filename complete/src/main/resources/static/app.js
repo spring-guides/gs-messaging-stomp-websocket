@@ -1,4 +1,23 @@
-var stompClient = null;
+const stompClient = new StompJs.Client({
+    brokerURL: 'ws://localhost:8080/gs-guide-websocket'
+});
+
+stompClient.onConnect = (frame) => {
+    setConnected(true);
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/topic/greetings', (greeting) => {
+        showGreeting(JSON.parse(greeting.body).content);
+    });
+};
+
+stompClient.onWebSocketError = (error) => {
+    console.error('Error with websocket', error);
+};
+
+stompClient.onStompError = (frame) => {
+    console.error('Broker reported error: ' + frame.headers['message']);
+    console.error('Additional details: ' + frame.body);
+};
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -13,27 +32,20 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
-        });
-    });
+    stompClient.activate();
 }
 
 function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
+    stompClient.deactivate();
     setConnected(false);
     console.log("Disconnected");
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.publish({
+        destination: "/app/hello",
+        body: JSON.stringify({'name': $("#name").val()})
+    });
 }
 
 function showGreeting(message) {
@@ -41,11 +53,9 @@ function showGreeting(message) {
 }
 
 $(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    $("form").on('submit', (e) => e.preventDefault());
+    $( "#connect" ).click(() => connect());
+    $( "#disconnect" ).click(() => disconnect());
+    $( "#send" ).click(() => sendName());
 });
 
