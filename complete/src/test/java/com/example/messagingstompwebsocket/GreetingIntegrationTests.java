@@ -21,9 +21,9 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +34,6 @@ public class GreetingIntegrationTests {
 	@Value(value="${local.server.port}")
 	private int port;
 
-	private SockJsClient sockJsClient;
-
 	private WebSocketStompClient stompClient;
 
 	private final WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
@@ -43,10 +41,11 @@ public class GreetingIntegrationTests {
 	@BeforeEach
 	public void setup() {
 		List<Transport> transports = new ArrayList<>();
-		transports.add(new WebSocketTransport(new StandardWebSocketClient()));
-		this.sockJsClient = new SockJsClient(transports);
+		WebSocketClient webSocketClient = new StandardWebSocketClient();
+		transports.add(new WebSocketTransport(webSocketClient));
 
-		this.stompClient = new WebSocketStompClient(sockJsClient);
+		this.stompClient = new WebSocketStompClient(webSocketClient);
+		this.stompClient = new WebSocketStompClient(webSocketClient);
 		this.stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 	}
 
