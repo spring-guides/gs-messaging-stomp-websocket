@@ -175,7 +175,7 @@ designates the `/app` prefix for messages that are bound for methods annotated w
 example, `/app/hello` is the endpoint that the `GreetingController.greeting()` method is
 mapped to handle.
 
-The `registerStompEndpoints()` method registers the `/gs-guide-websocket` endpoint for websockets' connections.
+The `registerStompEndpoints()` method registers the `/gs-guide-websocket` endpoint for websocket connections.
 
 == Create a Browser Client
 
@@ -192,7 +192,7 @@ include::complete/src/main/resources/static/index.html[]
 ----
 ====
 
-This HTML file imports the `STOMPJS` javascript library that will be used to
+This HTML file imports the https://stomp-js.github.io/[`StompJS`] javascript library that will be used to
 communicate with our server through STOMP over websocket. We also import `app.js`, which
 contains the logic of our client application. The following listing (from
 `src/main/resources/static/app.js`) shows that file:
