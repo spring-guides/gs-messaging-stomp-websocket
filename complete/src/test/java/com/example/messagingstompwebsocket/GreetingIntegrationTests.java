@@ -3,8 +3,6 @@ package com.example.messagingstompwebsocket;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,8 +22,6 @@ import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
-import org.springframework.web.socket.sockjs.client.Transport;
-import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import org.springframework.beans.factory.annotation.Value;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,11 +36,7 @@ public class GreetingIntegrationTests {
 
 	@BeforeEach
 	public void setup() {
-		List<Transport> transports = new ArrayList<>();
 		WebSocketClient webSocketClient = new StandardWebSocketClient();
-		transports.add(new WebSocketTransport(webSocketClient));
-
-		this.stompClient = new WebSocketStompClient(webSocketClient);
 		this.stompClient = new WebSocketStompClient(webSocketClient);
 		this.stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 	}
@@ -87,7 +79,7 @@ public class GreetingIntegrationTests {
 			}
 		};
 
-		this.stompClient.connect("ws://localhost:{port}/gs-guide-websocket", this.headers, handler, this.port);
+		this.stompClient.connectAsync("ws://localhost:{port}/gs-guide-websocket", this.headers, handler, this.port);
 
 		if (latch.await(3, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {
@@ -100,7 +92,7 @@ public class GreetingIntegrationTests {
 
 	}
 
-	private class TestSessionHandler extends StompSessionHandlerAdapter {
+	private static class TestSessionHandler extends StompSessionHandlerAdapter {
 
 		private final AtomicReference<Throwable> failure;
 
