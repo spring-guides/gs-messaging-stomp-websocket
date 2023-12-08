@@ -18,7 +18,7 @@ http://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol[STOMP] m
 with Spring to create an interactive web application. STOMP is a subprotocol operating
 on top of the lower-level WebSocket.
 
-== What You Will build
+== What You Will Build
 
 You will build a server that accepts a message that carries a user's name. In response,
 the server will push a greeting into a queue to which the client is subscribed.
