@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '3.3.0'
-	id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'java'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -9,20 +9,27 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation("org.webjars:webjars-locator-core")
+    // https://mvnrepository.com/artifact/org.webjars/bootstrap
+    implementation("org.webjars:bootstrap:3.3.7-1")
+    // https://mvnrepository.com/artifact/org.webjars/jquery
+    implementation("org.webjars:jquery:3.7.1")
+    // https://mvnrepository.com/artifact/org.webjars.npm/stomp__stompjs
+    implementation("org.webjars.npm:stomp__stompjs:7.1.1")
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
