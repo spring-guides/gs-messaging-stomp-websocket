@@ -22,7 +22,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation("org.webjars:webjars-locator-core")
     // https://mvnrepository.com/artifact/org.webjars/bootstrap
-    implementation("org.webjars:bootstrap:3.3.7-1")
+    implementation("org.webjars:bootstrap:3.4.1")
     // https://mvnrepository.com/artifact/org.webjars/jquery
     implementation("org.webjars:jquery:3.7.1")
     // https://mvnrepository.com/artifact/org.webjars.npm/stomp__stompjs
