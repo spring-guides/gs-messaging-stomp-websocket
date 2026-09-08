@@ -2,7 +2,7 @@
 :jackson: https://github.com/FasterXML/jackson
 :AtMessageMapping: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/MessageMapping.html
 :AtController: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/stereotype/Controller.html
-:AtEnableWebSocketMessageBroker: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/simp/config/EnableWebSocketMessageBroker.html
+:AtEnableWebSocketMessageBroker: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/web/socket/config/annotation/EnableWebSocketMessageBroker.html
 :Stomp_JS: http://jmesnil.net/stomp-websocket/doc/
 :AtSendTo: https://docs.spring.io/spring/docs/{spring_version}/javadoc-api/org/springframework/messaging/handler/annotation/SendTo.html
 :toc:
